@@ -1,12 +1,9 @@
 /*
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
- * Copyright (c) 2009 Jason Booth
- *
- * Copyright (c) 2009 Robert J Payne
- *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
+ * Copyright (c) 2009 Jason Booth
+ * Copyright (c) 2009 Robert J Payne
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -119,7 +116,7 @@ static CCSpriteFrameCache *sharedSpriteFrameCache_=nil;
 	// add real frames
 	for(NSString *frameDictKey in framesDict) {
 		NSDictionary *frameDict = [framesDict objectForKey:frameDictKey];
-		CCSpriteFrame *spriteFrame=nil;
+		CCSpriteFrame *spriteFrame;
 		if(format == 0) {
 			float x = [[frameDict objectForKey:@"x"] floatValue];
 			float y = [[frameDict objectForKey:@"y"] floatValue];
@@ -196,7 +193,7 @@ static CCSpriteFrameCache *sharedSpriteFrameCache_=nil;
 	NSString *path = [CCFileUtils fullPathFromRelativePath:plist];
 	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:path];
 
-	[self addSpriteFramesWithDictionary:dict texture:texture];
+	return [self addSpriteFramesWithDictionary:dict texture:texture];
 }
 
 -(void) addSpriteFramesWithFile:(NSString*)plist textureFile:(NSString*)textureFileName
@@ -337,4 +334,11 @@ static CCSpriteFrameCache *sharedSpriteFrameCache_=nil;
 	return frame;
 }
 
+#pragma mark CCSpriteFrameCache - sprite creation
+
+-(CCSprite*) createSpriteWithFrameName:(NSString*)name
+{
+	CCSpriteFrame *frame = [spriteFrames_ objectForKey:name];
+	return [CCSprite spriteWithSpriteFrame:frame];
+}
 @end

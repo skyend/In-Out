@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -122,7 +121,6 @@
 #pragma mark -
 #pragma mark RepeatForever
 @implementation CCRepeatForever
-@synthesize innerAction=innerAction_;
 +(id) actionWithAction: (CCActionInterval*) action
 {
 	return [[[self alloc] initWithAction: action] autorelease];
@@ -131,39 +129,38 @@
 -(id) initWithAction: (CCActionInterval*) action
 {
 	if( (self=[super init]) )	
-		self.innerAction = action;
+		other = [action retain];
 
 	return self;
 }
 
 -(id) copyWithZone: (NSZone*) zone
 {
-	CCAction *copy = [[[self class] allocWithZone: zone] initWithAction:[[innerAction_ copy] autorelease] ];
+	CCAction *copy = [[[self class] allocWithZone: zone] initWithAction:[[other copy] autorelease] ];
     return copy;
 }
 
 -(void) dealloc
 {
-	[innerAction_ release];
+	[other release];
 	[super dealloc];
 }
 
 -(void) startWithTarget:(id)aTarget
 {
 	[super startWithTarget:aTarget];
-	[innerAction_ startWithTarget:target_];
+	[other startWithTarget:target_];
 }
 
 -(void) step:(ccTime) dt
 {
-	[innerAction_ step: dt];
-	if( [innerAction_ isDone] ) {
-		ccTime diff = innerAction_.elapsed - innerAction_.duration;
-		[innerAction_ startWithTarget:target_];
+	[other step: dt];
+	if( [other isDone] ) {
+		ccTime diff = dt + other.duration - other.elapsed;
+		[other startWithTarget:target_];
 		
-		// to prevent jerk. issue #390, 1247
-		[innerAction_ step: 0.0f];
-		[innerAction_ step: diff];
+		// to prevent jerk. issue #390
+		[other step: diff];
 	}
 }
 
@@ -175,8 +172,9 @@
 
 - (CCActionInterval *) reverse
 {
-	return [CCRepeatForever actionWithAction:[innerAction_ reverse]];
+	return [CCRepeatForever actionWithAction:[other reverse]];
 }
+
 @end
 
 //
@@ -185,8 +183,7 @@
 #pragma mark -
 #pragma mark Speed
 @implementation CCSpeed
-@synthesize speed=speed_;
-@synthesize innerAction=innerAction_;
+@synthesize speed;
 
 +(id) actionWithAction: (CCActionInterval*) action speed:(float)r
 {
@@ -196,49 +193,49 @@
 -(id) initWithAction: (CCActionInterval*) action speed:(float)r
 {
 	if( (self=[super init]) ) {
-		self.innerAction = action;
-		speed_ = r;
+		other = [action retain];
+		speed = r;
 	}
 	return self;
 }
 
 -(id) copyWithZone: (NSZone*) zone
 {
-	CCAction *copy = [[[self class] allocWithZone: zone] initWithAction:[[innerAction_ copy] autorelease] speed:speed_];
+	CCAction *copy = [[[self class] allocWithZone: zone] initWithAction:[[other copy] autorelease] speed:speed];
     return copy;
 }
 
 -(void) dealloc
 {
-	[innerAction_ release];
+	[other release];
 	[super dealloc];
 }
 
 -(void) startWithTarget:(id)aTarget
 {
 	[super startWithTarget:aTarget];
-	[innerAction_ startWithTarget:target_];
+	[other startWithTarget:target_];
 }
 
 -(void) stop
 {
-	[innerAction_ stop];
+	[other stop];
 	[super stop];
 }
 
 -(void) step:(ccTime) dt
 {
-	[innerAction_ step: dt * speed_];
+	[other step: dt * speed];
 }
 
 -(BOOL) isDone
 {
-	return [innerAction_ isDone];
+	return [other isDone];
 }
 
 - (CCActionInterval *) reverse
 {
-	return [CCSpeed actionWithAction:[innerAction_ reverse] speed:speed_];
+	return [CCSpeed actionWithAction:[other reverse] speed:speed];
 }
 @end
 
@@ -323,6 +320,8 @@
 
 -(void) step:(ccTime) dt
 {
+#define CLAMP(x,y,z) MIN(MAX(x,y),z)
+	
 	if(boundarySet)
 	{
 		// whole map fits inside a single screen, no need to modify the position - unless map boundaries are increased
@@ -330,10 +329,12 @@
 			return;
 		
 		CGPoint tempPos = ccpSub( halfScreenSize, followedNode_.position);
-		[target_ setPosition:ccp(clampf(tempPos.x,leftBoundary,rightBoundary), clampf(tempPos.y,bottomBoundary,topBoundary))];
+		[target_ setPosition:ccp(CLAMP(tempPos.x,leftBoundary,rightBoundary), CLAMP(tempPos.y,bottomBoundary,topBoundary))];
 	}
 	else
-		[target_ setPosition:ccpSub( halfScreenSize, followedNode_.position )];	
+		[target_ setPosition:ccpSub( halfScreenSize, followedNode_.position )];
+	
+#undef CLAMP
 }
 
 

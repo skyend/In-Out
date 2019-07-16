@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -86,7 +85,6 @@ extern NSString * cocos2dVersion(void);
 @synthesize runningThread = runningThread_;
 @synthesize notificationNode = notificationNode_;
 @synthesize projectionDelegate = projectionDelegate_;
-@synthesize totalFrames = totalFrames_;
 //
 // singleton stuff
 //
@@ -139,7 +137,7 @@ static CCDirector *_sharedDirector = nil;
 
 		// FPS
 		displayFPS_ = NO;
-		totalFrames_ = frames_ = 0;
+		frames_ = 0;
 		
 		// paused ?
 		isPaused_ = NO;
@@ -219,12 +217,6 @@ static CCDirector *_sharedDirector = nil;
 		dt = (now.tv_sec - lastUpdate_.tv_sec) + (now.tv_usec - lastUpdate_.tv_usec) / 1000000.0f;
 		dt = MAX(0,dt);
 	}
-
-#ifdef DEBUG
-	// If we are debugging our code, prevent big delta time
-	if( dt > 0.2f )
-		dt = 1/60.0f;
-#endif
 	
 	lastUpdate_ = now;	
 }
@@ -234,7 +226,7 @@ static CCDirector *_sharedDirector = nil;
 -(void) purgeCachedData
 {
 	[CCLabelBMFont purgeCachedData];	
-	[[CCTextureCache sharedTextureCache] removeUnusedTextures];	
+	[CCTextureCache purgeSharedTextureCache];	
 }
 
 #pragma mark Director - Scene OpenGL Helper
@@ -270,7 +262,7 @@ static CCDirector *_sharedDirector = nil;
 		ccglClearDepth(1.0f);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
-//		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	} else
 		glDisable( GL_DEPTH_TEST );
 }
@@ -352,6 +344,7 @@ static CCDirector *_sharedDirector = nil;
 	sendCleanupToScene_ = YES;
 	[scenesStack_ replaceObjectAtIndex:index-1 withObject:scene];
 	nextScene_ = scene;	// nextScene_ is a weak ref
+
 }
 
 - (void) pushScene: (CCScene*) scene
@@ -492,6 +485,8 @@ static CCDirector *_sharedDirector = nil;
 	CCLOG(@"cocos2d: Director#setAnimationInterval. Override me");
 }
 
+
+
 #if CC_DIRECTOR_FAST_FPS
 
 // display the FPS using a LabelAtlas
@@ -513,7 +508,7 @@ static CCDirector *_sharedDirector = nil;
 		[FPSLabel_ setString:str];
 		[str release];
 	}
-
+		
 	[FPSLabel_ draw];
 }
 #else
@@ -531,7 +526,7 @@ static CCDirector *_sharedDirector = nil;
 	}
 	
 	NSString *str = [NSString stringWithFormat:@"%.2f",frameRate_];
-	CCTexture2D *texture = [[CCTexture2D alloc] initWithString:str dimensions:CGSizeMake(100,30) alignment:CCTextAlignmentLeft fontName:@"Arial" fontSize:24];
+	CCTexture2D *texture = [[CCTexture2D alloc] initWithString:str dimensions:CGSizeMake(100,30) alignment:UITextAlignmentLeft fontName:@"Arial" fontSize:24];
 
 	// Default GL states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_COLOR_ARRAY, GL_TEXTURE_COORD_ARRAY
 	// Needed states: GL_TEXTURE_2D, GL_VERTEX_ARRAY, GL_TEXTURE_COORD_ARRAY
@@ -550,7 +545,6 @@ static CCDirector *_sharedDirector = nil;
 	glEnableClientState(GL_COLOR_ARRAY);
 }
 #endif
-
 
 - (void) showProfilers {
 #if CC_ENABLE_PROFILERS

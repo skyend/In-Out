@@ -103,16 +103,7 @@ Requirements:
 #define CD_SAMPLE_RATE_BASIC 8000
 #define CD_SAMPLE_RATE_DEFAULT 44100
 
-extern NSString * const kCDN_BadAlContext;
-extern NSString * const kCDN_AsynchLoadComplete;
-
-extern float const kCD_PitchDefault;
-extern float const kCD_PitchLowerOneOctave;
-extern float const kCD_PitchHigherOneOctave;
-extern float const kCD_PanDefault;
-extern float const kCD_PanFullLeft;
-extern float const kCD_PanFullRight;
-extern float const kCD_GainDefault;
+#define CD_MSG_BAD_AL_CONTEXT @"cdbadalcontext"
 
 enum bufferState {
 	CD_BS_EMPTY = 0,
@@ -207,13 +198,12 @@ typedef struct _sourceInfo {
 	sourceInfo		*_sources;
 	sourceGroup	    *_sourceGroups;
 	ALCcontext		*context;
-	NSUInteger		_sourceGroupTotal;
+	int				_sourceGroupTotal;
 	UInt32			_audioSessionCategory;
 	BOOL			_handleAudioSession;
-	ALfloat			_preMuteGain;
-	NSObject        *_mutexBufferLoad;
 	BOOL			mute_;
 	BOOL			enabled_;
+	ALfloat			_preMuteGain;
 
 	ALenum			lastErrorCode_;
 	BOOL			functioning_;
@@ -234,7 +224,7 @@ typedef struct _sourceInfo {
 /** Total number of sources available */
 @property (readonly) int sourceTotal;
 /** Total number of source groups that have been defined */
-@property (readonly) NSUInteger sourceGroupTotal;
+@property (readonly) int sourceGroupTotal;
 
 /** Sets the sample rate for the audio mixer. For best performance this should match the sample rate of your audio content */
 +(void) setMixerSampleRate:(Float32) sampleRate;
@@ -256,7 +246,7 @@ typedef struct _sourceInfo {
 /** Stops all playing sounds */
 -(void) stopAllSounds;
 -(void) defineSourceGroups:(NSArray*) sourceGroupDefinitions;
--(void) defineSourceGroups:(int[]) sourceGroupDefinitions total:(NSUInteger) total;
+-(void) defineSourceGroups:(int[]) sourceGroupDefinitions total:(int) total;
 -(void) setSourceGroupNonInterruptible:(int) sourceGroupId isNonInterruptible:(BOOL) isNonInterruptible;
 -(void) setSourceGroupEnabled:(int) sourceGroupId enabled:(BOOL) enabled;
 -(BOOL) sourceGroupEnabled:(int) sourceGroupId;
@@ -354,7 +344,7 @@ typedef struct _sourceInfo {
 @property (readonly) NSString *filePath;
 @property (readonly) int soundId;
 
-- (id)init:(int) theSoundId filePath:(const NSString *) theFilePath;
+- (id)init:(int) theSoundId filePath:(NSString *) theFilePath;
 @end
 
 /** Interpolation type */

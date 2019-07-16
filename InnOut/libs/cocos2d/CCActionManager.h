@@ -1,10 +1,8 @@
 /*
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
- * Copyright (c) 2009 Valentin Milea
- *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
+ * Copyright (c) 2009 Valentin Milea
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +33,7 @@ typedef struct _hashElement
 {
 	struct ccArray	*actions;
 	id				target;
-	NSUInteger		actionIndex;
+	unsigned int	actionIndex;
 	CCAction		*currentAction;
 	BOOL			currentActionSalvaged;
 	BOOL			paused;	
@@ -88,17 +86,17 @@ typedef struct _hashElement
  */
 -(void) removeAction: (CCAction*) action;
 /** Removes an action given its tag and the target */
--(void) removeActionByTag:(NSInteger)tag target:(id)target;
+-(void) removeActionByTag:(int)tag target:(id)target;
 /** Gets an action given its tag an a target
  @return the Action the with the given tag
  */
--(CCAction*) getActionByTag:(NSInteger) tag target:(id)target;
+-(CCAction*) getActionByTag:(int) tag target:(id)target;
 /** Returns the numbers of actions that are running in a certain target
  * Composable actions are counted as 1 action. Example:
  *    If you are running 1 Sequence of 7 actions, it will return 1.
  *    If you are running 7 Sequences of 2 actions, it will return 7.
  */
--(NSUInteger) numberOfRunningActionsInTarget:(id)target;
+-(int) numberOfRunningActionsInTarget:(id)target;
 
 /** Pauses the target: all running actions and newly added actions will be paused.
  */
@@ -106,6 +104,15 @@ typedef struct _hashElement
 /** Resumes the target. All queued actions will be resumed.
  */
 -(void) resumeTarget:(id)target;
+
+/** Resumes the target. All queued actions will be resumed.
+ @deprecated Use resumeTarget: instead. Will be removed in v1.0.
+ */
+-(void) resumeAllActionsForTarget:(id)target DEPRECATED_ATTRIBUTE;
+/** Pauses the target: all running actions and newly added actions will be paused.
+ */
+-(void) pauseAllActionsForTarget:(id)target DEPRECATED_ATTRIBUTE;
+
 
 @end
 

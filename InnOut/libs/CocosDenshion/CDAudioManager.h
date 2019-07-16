@@ -51,8 +51,6 @@ typedef enum {
 	kAMRBStop					//Background music is stopped on resign but not resumed - maybe because you want to do this from within your game
 } tAudioManagerResignBehavior;
 
-/** Notifications */
-extern NSString * const kCDN_AudioManagerInitialised;
 
 @interface CDAsynchInitialiser : NSOperation {}	
 @end

@@ -1,7 +1,7 @@
 /*
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
- * Copyright (c) 2010 ForzeField Studios S.L. http://forzefield.com
+ * Copyright (c) 2010 Abstraction Works. http://www.abstractionworks.com
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +39,9 @@
 
 #define CCARRAY_FOREACH(__array__, __object__)												\
 if (__array__ && __array__->data->num > 0)													\
-for(id *__arr__ = __array__->data->arr, *end = __array__->data->arr + __array__->data->num-1;	\
-	__arr__ <= end && ((__object__ = *__arr__) != nil || true);										\
-	__arr__++)
+for(id *arr = __array__->data->arr, *end = __array__->data->arr + __array__->data->num-1;	\
+	arr <= end && ((__object__ = *arr) != nil || true);										\
+	arr++)
 
 @interface CCArray : NSObject <NSFastEnumeration, NSCoding, NSCopying>
 {
@@ -59,27 +59,22 @@ for(id *__arr__ = __array__->data->arr, *end = __array__->data->arr + __array__-
 - (id) initWithNSArray:(NSArray*)otherArray;
 
 
-// Querying an Array
-
 - (NSUInteger) count;
 - (NSUInteger) capacity;
 - (NSUInteger) indexOfObject:(id)object;
 - (id) objectAtIndex:(NSUInteger)index;
-- (BOOL) containsObject:(id)object;
-- (id) randomObject;
 - (id) lastObject;
-- (NSArray*) getNSArray;
+- (id) randomObject;
+- (BOOL) containsObject:(id)object;
 
-
-// Adding Objects
+#pragma mark Adding Objects
 
 - (void) addObject:(id)object;
 - (void) addObjectsFromArray:(CCArray*)otherArray;
 - (void) addObjectsFromNSArray:(NSArray*)otherArray;
 - (void) insertObject:(id)object atIndex:(NSUInteger)index;
 
-
-// Removing Objects
+#pragma mark Removing Objects
 
 - (void) removeLastObject;
 - (void) removeObject:(id)object;
@@ -89,18 +84,9 @@ for(id *__arr__ = __array__->data->arr, *end = __array__->data->arr + __array__-
 - (void) fastRemoveObject:(id)object;
 - (void) fastRemoveObjectAtIndex:(NSUInteger)index;
 
-
-// Rearranging Content
-
-- (void) exchangeObject:(id)object1 withObject:(id)object2;
-- (void) exchangeObjectAtIndex:(NSUInteger)index1 withObjectAtIndex:(NSUInteger)index2;
-- (void) reverseObjects;
-- (void) reduceMemoryFootprint;
-
-// Sending Messages to Elements
-
 - (void) makeObjectsPerformSelector:(SEL)aSelector;
 - (void) makeObjectsPerformSelector:(SEL)aSelector withObject:(id)object;
 
+- (NSArray*) getNSArray;
 
 @end

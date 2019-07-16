@@ -455,8 +455,7 @@ static CGSize drawOrSizeTextConstrainedToSize(BOOL performDraw, NSString *string
 	
 	READ_GLYPHS();
 	
-	NSMutableCharacterSet *alphaCharset = [NSMutableCharacterSet alphanumericCharacterSet];
-	[alphaCharset addCharactersInString:@"([{'\"\u2019\u02BC"];
+	NSCharacterSet *alphaCharset = [NSCharacterSet alphanumericCharacterSet];
 	
 	// scan left-to-right looking for newlines or until we hit the width constraint
 	// When we hit a wrapping point, calculate truncation as follows:
@@ -519,27 +518,6 @@ static CGSize drawOrSizeTextConstrainedToSize(BOOL performDraw, NSString *string
 					lineAscender = MAX(lineAscender, currentFont.ascender);
 				}
 				unichar c = characters[idx];
-				// Mark a wrap point before spaces and after any stretch of non-alpha characters
-				BOOL markWrap = NO;
-				if (c == (unichar)' ') {
-					markWrap = YES;
-				} else if ([alphaCharset characterIsMember:c]) {
-					if (!inAlpha) {
-						markWrap = YES;
-						inAlpha = YES;
-					}
-				} else {
-					inAlpha = NO;
-				}
-				if (markWrap) {
-					lastWrapCache = (__typeof__(lastWrapCache)){
-						.index = idx,
-						.glyphIndex = glyphIdx,
-						.currentRunIdx = currentRunIdx,
-						.lineSize = lineSize
-					};
-				}
-				// process the line
 				if (c == (unichar)'\n' || c == 0x0085) { // U+0085 is the NEXT_LINE unicode character
 					finishLine = YES;
 					skipCount = 1;
@@ -704,6 +682,26 @@ static CGSize drawOrSizeTextConstrainedToSize(BOOL performDraw, NSString *string
 				glyphIdx += skipCount;
 				lineCount++;
 			} else {
+				// Mark a wrap point before spaces and after any stretch of non-alpha characters
+				BOOL markWrap = NO;
+				if (characters[idx] == (unichar)' ') {
+					markWrap = YES;
+				} else if ([alphaCharset characterIsMember:characters[idx]]) {
+					if (!inAlpha) {
+						markWrap = YES;
+						inAlpha = YES;
+					}
+				} else {
+					inAlpha = NO;
+				}
+				if (markWrap) {
+					lastWrapCache = (__typeof__(lastWrapCache)){
+						.index = idx,
+						.glyphIndex = glyphIdx,
+						.currentRunIdx = currentRunIdx,
+						.lineSize = lineSize
+					};
+				}
 				lineSize.width += advances[glyphIdx];
 				glyphIdx++;
 				idx++;

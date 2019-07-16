@@ -67,7 +67,7 @@
 }
 
 - (id)mutableCopyWithZone:(NSZone *)zone {
-	return [(ZMutableAttributedString *)[ZMutableAttributedString allocWithZone:zone] initWithAttributedString:self];
+	return [(ZMutableAttributedString*)[ZMutableAttributedString allocWithZone:zone] initWithAttributedString:self];
 }
 
 - (NSUInteger)length {
@@ -291,7 +291,7 @@
 			NSUInteger endRunIndex = runIndex+1;
 			runIndex--;
 			// search backwards
-			while (1) {
+			while (true) {
 				if (run.index <= rangeLimit.location) {
 					break;
 				}
@@ -349,7 +349,7 @@
 
 @implementation ZMutableAttributedString
 - (id)copyWithZone:(NSZone *)zone {
-	return [(ZAttributedString *)[ZAttributedString allocWithZone:zone] initWithAttributedString:self];
+	return [(ZMutableAttributedString*)[ZAttributedString allocWithZone:zone] initWithAttributedString:self];
 }
 
 - (void)addAttribute:(NSString *)name value:(id)value range:(NSRange)range {
@@ -459,8 +459,7 @@
 	if (((ZAttributeRun *)[_attributes lastObject]).index < NSMaxRange(range)) {
 		NSRange subrange = NSMakeRange(first, [_attributes count] - first);
 		if (NSMaxRange(range) < [_buffer length]) {
-			ZAttributeRun *newRun = [[ZAttributeRun alloc] initWithIndex:NSMaxRange(range)
-															  attributes:(NSDictionary*)[(ZAttributeRun *)[_attributes lastObject] attributes]];
+			ZAttributeRun *newRun = [[ZAttributeRun alloc] initWithIndex:NSMaxRange(range) attributes:(NSDictionary*)[[_attributes lastObject] attributes]];
 			[_attributes addObject:newRun];
 			[newRun release];
 		}
@@ -484,7 +483,7 @@
 		if ([[_attributes objectAtIndex:firstAfter] index] > NSMaxRange(range)) {
 			// the first after is too far after, insert another run!
 			ZAttributeRun *newRun = [[ZAttributeRun alloc] initWithIndex:NSMaxRange(range)
-															  attributes:[(ZAttributeRun *)[_attributes objectAtIndex:firstAfter-1] attributes]];
+															  attributes:(NSDictionary*)[[_attributes objectAtIndex:firstAfter-1] attributes]];
 			[_attributes insertObject:newRun atIndex:firstAfter];
 			[newRun release];
 		}
@@ -537,7 +536,6 @@
 }
 
 - (id)initWithIndex:(NSUInteger)idx attributes:(NSDictionary *)attrs {
-	NSParameterAssert(idx >= 0);
 	if ((self = [super init])) {
 		_index = idx;
 		if (attrs == nil) {

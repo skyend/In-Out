@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -160,7 +159,7 @@ typedef struct _ccTex2F {
 typedef struct _ccPointSprite
 {
 	ccVertex2F	pos;		// 8 bytes
-	ccColor4B	color;		// 4 bytes
+	ccColor4F	colors;		// 16 bytes
 	GLfloat		size;		// 4 bytes
 } ccPointSprite;
 
@@ -196,17 +195,6 @@ ccg(const NSInteger x, const NSInteger y)
 	return v;
 }
 
-//! a Point with a vertex point, a tex coord point and a color 4B
-typedef struct _ccV2F_C4B_T2F
-{
-	//! vertices (2F)
-	ccVertex2F		vertices;
-	//! colors (4B)
-	ccColor4B		colors;
-	//! tex coords (2F)
-	ccTex2F			texCoords;
-} ccV2F_C4B_T2F;
-
 //! a Point with a vertex point, a tex coord point and a color 4F
 typedef struct _ccV2F_C4F_T2F
 {
@@ -232,19 +220,6 @@ typedef struct _ccV3F_C4B_T2F
 	// tex coords (2F)
 	ccTex2F			texCoords;			// 8 byts
 } ccV3F_C4B_T2F;
-
-//! 4 ccVertex2FTex2FColor4B Quad
-typedef struct _ccV2F_C4B_T2F_Quad
-{
-	//! bottom left
-	ccV2F_C4B_T2F	bl;
-	//! bottom right
-	ccV2F_C4B_T2F	br;
-	//! top left
-	ccV2F_C4B_T2F	tl;
-	//! top right
-	ccV2F_C4B_T2F	tr;
-} ccV2F_C4B_T2F_Quad;
 
 //! 4 ccVertex3FTex2FColor4B
 typedef struct _ccV3F_C4B_T2F_Quad
@@ -280,20 +255,6 @@ typedef struct _ccBlendFunc
 	//! destination blend function
 	GLenum dst;
 } ccBlendFunc;
-
-//! ccResolutionType
-typedef enum
-{
-	//! Unknonw resolution type
-	kCCResolutionUnknown,
-	//! standard (iphone) resolution type
-	kCCResolutionStandard,
-	//! RetinaDisplay resolution type
-	kCCResolutionRetinaDisplay,
-	//! iPad resolution type
-	kCCResolutioniPad,
-	
-} ccResolutionType;
 
 //! delta time type
 //! if you want more resolution redefine it as a double

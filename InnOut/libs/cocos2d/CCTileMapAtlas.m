@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +31,7 @@
 @interface CCTileMapAtlas (Private)
 -(void) loadTGAfile:(NSString*)file;
 -(void) calculateItemsToRender;
--(void) updateAtlasValueAt:(ccGridSize)pos withValue:(ccColor3B)value withIndex:(NSUInteger)idx;
+-(void) updateAtlasValueAt:(ccGridSize)pos withValue:(ccColor3B)value withIndex:(int)idx;
 @end
 
 
@@ -155,12 +154,12 @@
 	return value;	
 }
 
--(void) updateAtlasValueAt:(ccGridSize)pos withValue:(ccColor3B)value withIndex:(NSUInteger)idx
+-(void) updateAtlasValueAt:(ccGridSize)pos withValue:(ccColor3B)value withIndex:(int)idx
 {
 	ccV3F_C4B_T2F_Quad quad;
 
-	NSInteger x = pos.x;
-	NSInteger y = pos.y;
+	int x = pos.x;
+	int y = pos.y;
 	float row = (value.r % itemsPerRow_);
 	float col = (value.r / itemsPerRow_);
 	

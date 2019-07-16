@@ -29,12 +29,13 @@
 // Should buffer factor be 1.5 instead of 2 ?
 #define BUFFER_INC_FACTOR (2)
 
-static int inflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int *outLength, unsigned int outLenghtHint )
+static int inflateMemory_(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int *outLength)
 {
 	/* ret value */
 	int err = Z_OK;
 	
-	int bufferSize = outLenghtHint;
+	/* 256k initial decompress buffer */
+	int bufferSize = 256 * 1024;
 	*out = (unsigned char*) malloc(bufferSize);
 	
     z_stream d_stream; /* decompression stream */	
@@ -86,27 +87,27 @@ static int inflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsig
 		}
     }
 	
-	
+
 	*outLength = bufferSize - d_stream.avail_out;
     err = inflateEnd(&d_stream);
 	return err;
 }
 
-int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned char **out, unsigned int outLengthHint )
+int ccInflateMemory(unsigned char *in, unsigned int inLength, unsigned char **out)
 {
 	unsigned int outLength = 0;
-	int err = inflateMemoryWithHint(in, inLength, out, &outLength, outLengthHint );
+	int err = inflateMemory_(in, inLength, out, &outLength);
 	
 	if (err != Z_OK || *out == NULL) {
 		if (err == Z_MEM_ERROR)
 			CCLOG(@"cocos2d: ZipUtils: Out of memory while decompressing map data!");
-		
+
 		else if (err == Z_VERSION_ERROR)
 			CCLOG(@"cocos2d: ZipUtils: Incompatible zlib version!");
-		
+
 		else if (err == Z_DATA_ERROR)
 			CCLOG(@"cocos2d: ZipUtils: Incorrect zlib compressed data!");
-		
+
 		else
 			CCLOG(@"cocos2d: ZipUtils: Unknown error while decompressing map data!");
 		
@@ -118,19 +119,13 @@ int ccInflateMemoryWithHint(unsigned char *in, unsigned int inLength, unsigned c
 	return outLength;
 }
 
-int ccInflateMemory(unsigned char *in, unsigned int inLength, unsigned char **out)
-{
-	// 256k for hint
-	return ccInflateMemoryWithHint(in, inLength, out, 256 * 1024 );
-}
-
 int ccInflateGZipFile(const char *path, unsigned char **out)
 {
 	int len;
 	unsigned int offset = 0;
 	
-	NSCAssert( out, @"ccInflateGZipFile: invalid 'out' parameter");
-	NSCAssert( &*out, @"ccInflateGZipFile: invalid 'out' parameter");
+	assert( out );
+	assert( &*out );
 
 	gzFile inFile = gzopen(path, "rb");
 	if( inFile == NULL ) {
@@ -139,7 +134,7 @@ int ccInflateGZipFile(const char *path, unsigned char **out)
 	}
 	
 	/* 512k initial decompress buffer */
-	int bufferSize = 512 * 1024;
+	unsigned int bufferSize = 512 * 1024;
 	unsigned int totalBufferSize = bufferSize;
 	
 	*out = malloc( bufferSize );
@@ -187,15 +182,14 @@ int ccInflateGZipFile(const char *path, unsigned char **out)
 
 int ccInflateCCZFile(const char *path, unsigned char **out)
 {
-	NSCAssert( out, @"ccInflateCCZFile: invalid 'out' parameter");
-	NSCAssert( &*out, @"ccInflateCCZFile: invalid 'out' parameter");
+	assert( out );
+	assert( &*out );
 
 	// load file into memory
 	unsigned char *compressed = NULL;
-	NSInteger fileLen  = ccLoadFileIntoMemory( path, &compressed );
+	int fileLen  = ccLoadFileIntoMemory( path, &compressed );
 	if( fileLen < 0 ) {
 		CCLOG(@"cocos2d: Error loading CCZ compressed file");
-		return -1;
 	}
 	
 	struct CCZHeader *header = (struct CCZHeader*) compressed;

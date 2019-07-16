@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2009-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +38,7 @@
 
 /** CCTMXLayer represents the TMX layer.
  
- It is a subclass of CCSpriteBatchNode. By default the tiles are rendered using a CCTextureAtlas.
+ It is a subclass of CCSpriteSheet. By default the tiles are rendered using a CCTextureAtlas.
  If you mofify a tile on runtime, then, that tile will become a CCSprite, otherwise no CCSprite objects are created.
  The benefits of using CCSprite objects as tiles are:
  - tiles (CCSprite) can be rotated/scaled/moved with a nice API
@@ -68,23 +67,25 @@
 	NSString			*layerName_;
 	CGSize				layerSize_;
 	CGSize				mapTileSize_;
-	uint32_t			*tiles_;			// GID are 32 bit
-	NSUInteger			layerOrientation_;
+	unsigned int		*tiles_;
+	int					layerOrientation_;
 	NSMutableArray		*properties_;
 	
 	unsigned char		opacity_; // TMX Layer supports opacity
 	
-	NSUInteger			minGID_;
-	NSUInteger			maxGID_;
+	unsigned int		minGID_;
+	unsigned int		maxGID_;
 	
 	// Only used when vertexZ is used
-	NSInteger			vertexZvalue_;
+	int					vertexZvalue_;
 	BOOL				useAutomaticVertexZ_;
 	float				alphaFuncValue_;
 	
 	// used for optimization
 	CCSprite		*reusedTile_;
 	ccCArray		*atlasIndexArray_;
+	
+	
 }
 /** name of the layer */
 @property (nonatomic,readwrite,retain) NSString *layerName;
@@ -93,11 +94,11 @@
 /** size of the map's tile (could be differnt from the tile's size) */
 @property (nonatomic,readwrite) CGSize mapTileSize;
 /** pointer to the map of tiles */
-@property (nonatomic,readwrite) uint32_t *tiles;
+@property (nonatomic,readwrite) unsigned int *tiles;
 /** Tilset information for the layer */
 @property (nonatomic,readwrite,retain) CCTMXTilesetInfo *tileset;
 /** Layer orientation, which is the same as the map orientation */
-@property (nonatomic,readwrite) NSUInteger layerOrientation;
+@property (nonatomic,readwrite) int layerOrientation;
 /** properties from the layer. They can be added using Tiled */
 @property (nonatomic,readwrite,retain) NSMutableArray *properties;
 
@@ -125,13 +126,13 @@
  if it returns 0, it means that the tile is empty.
  This method requires the the tile map has not been previously released (eg. don't call [layer releaseMap])
  */
--(uint32_t) tileGIDAt:(CGPoint)tileCoordinate;
+-(unsigned int) tileGIDAt:(CGPoint)tileCoordinate;
 
 /** sets the tile gid (gid = tile global id) at a given tile coordinate.
  The Tile GID can be obtained by using the method "tileGIDAt" or by using the TMX editor -> Tileset Mgr +1.
  If a tile is already placed at that position, then it will be removed.
  */
--(void) setTileGID:(uint32_t)gid at:(CGPoint)tileCoordinate;
+-(void) setTileGID:(unsigned int)gid at:(CGPoint)tileCoordinate;
 
 /** removes a tile at given tile coordinate */
 -(void) removeTileAt:(CGPoint)tileCoordinate;
@@ -148,5 +149,5 @@
 /** CCTMXLayer doesn't support adding a CCSprite manually.
  @warning addchild:z:tag: is not supported on CCTMXLayer. Instead of setTileGID:at:/tileAt:
  */
--(void) addChild: (CCNode*)node z:(NSInteger)z tag:(NSInteger)tag;
+-(void) addChild: (CCNode*)node z:(int)z tag:(int)tag;
 @end

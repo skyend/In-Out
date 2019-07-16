@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +51,7 @@ enum {
 @property (nonatomic,readonly,assign) id target;
 
 /** The original target, since target can be nil.
- Is the target that were used to run the action. Unless you are doing something complex, like CCActionManager, you should NOT call this method.
+ Is the target that were used to run the action. Unless you are doing something complex, like ActionManager, you should NOT call this method.
  @since v0.8.2
 */
 @property (nonatomic,readonly,assign) id originalTarget;
@@ -113,11 +112,8 @@ enum {
  */
 @interface CCRepeatForever : CCAction <NSCopying>
 {
-	CCActionInterval *innerAction_;
+	CCActionInterval *other;
 }
-/** Inner action */
-@property (nonatomic, readwrite, retain) CCActionInterval *innerAction;
-
 /** creates the action */
 +(id) actionWithAction: (CCActionInterval*) action;
 /** initializes the action */
@@ -127,18 +123,15 @@ enum {
 /** Changes the speed of an action, making it take longer (speed>1)
  or less (speed<1) time.
  Useful to simulate 'slow motion' or 'fast forward' effect.
- @warning This action can't be Sequenceable because it is not an CCIntervalAction
+ @warning This action can't be Sequenceable because it is not an IntervalAction
  */
 @interface CCSpeed : CCAction <NSCopying>
 {
-	CCActionInterval	*innerAction_;
-	float speed_;
+	CCActionInterval	*other;
+	float speed;
 }
 /** alter the speed of the inner function in runtime */
 @property (nonatomic,readwrite) float speed;
-/** Inner action of CCSpeed */
-@property (nonatomic, readwrite, retain) CCActionInterval *innerAction;
-
 /** creates the action */
 +(id) actionWithAction: (CCActionInterval*) action speed:(float)rate;
 /** initializes the action */

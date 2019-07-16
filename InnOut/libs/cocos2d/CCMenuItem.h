@@ -1,8 +1,7 @@
 /*
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
- * Copyright (c) 2008-2011 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
+ * Copyright (c) 2008-2010 Ricardo Quesada
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,17 +30,15 @@
 
 @class CCSprite;
 
-#define kCCItemSize 32
+#define kItemSize 32
 
-#pragma mark -
-#pragma mark CCMenuItem
 /** CCMenuItem base class
  *
  *  Subclass CCMenuItem (or any subclass) to create your custom CCMenuItem objects.
  */
 @interface CCMenuItem : CCNode
 {
-	NSInvocation *invocation_;
+	NSInvocation *invocation;
 #if NS_BLOCKS_AVAILABLE
 	// used for menu items using a block
 	void (^block_)(id sender);
@@ -80,6 +77,10 @@
 /** Activate the item */
 -(void) activate;
 
+/** modify **/
+-(void) beginActive;
+
+
 /** The item was selected (not activated), similar to "mouse-over" */
 -(void) selected;
 
@@ -91,9 +92,6 @@
 /** Returns whether or not the CCMenuItem is enabled */
 -(BOOL) isEnabled;
 @end
-
-#pragma mark -
-#pragma mark CCMenuItemLabel
 
 /** An abstract class for "label" CCMenuItemLabel items 
  Any CCNode that supports the CCLabelProtocol protocol can be added.
@@ -115,9 +113,6 @@
 
 /** Label that is rendered. It can be any CCNode that implements the CCLabelProtocol */
 @property (nonatomic,readwrite,assign) CCNode<CCLabelProtocol, CCRGBAProtocol>* label;
-
-/** creates a CCMenuItemLabel with a Label. Target and selector will be nill */
-+(id) itemWithLabel:(CCNode<CCLabelProtocol,CCRGBAProtocol>*)label;
 
 /** creates a CCMenuItemLabel with a Label, target and selector */
 +(id) itemWithLabel:(CCNode<CCLabelProtocol,CCRGBAProtocol>*)label target:(id)target selector:(SEL)selector;
@@ -145,9 +140,6 @@
  */
 -(void) setIsEnabled: (BOOL)enabled;
 @end
-
-#pragma mark -
-#pragma mark CCMenuItemAtlasFont
 
 /** A CCMenuItemAtlasFont
  Helper class that creates a MenuItemLabel class with a LabelAtlas
@@ -179,27 +171,22 @@
 
 @end
 
-#pragma mark -
-#pragma mark CCMenuItemFont
-
 /** A CCMenuItemFont
  Helper class that creates a CCMenuItemLabel class with a Label
  */
 @interface CCMenuItemFont : CCMenuItemLabel
 {
-	NSUInteger fontSize_;
-	NSString *fontName_;
 }
-/** set default font size */
-+(void) setFontSize: (NSUInteger) s;
+/** set font size */
++(void) setFontSize: (int) s;
 
-/** get default font size */
-+(NSUInteger) fontSize;
+/** get font size */
++(int) fontSize;
 
-/** set default font name */
+/** set the font name */
 +(void) setFontName: (NSString*) n;
 
-/** get default font name */
+/** get the font name */
 +(NSString*) fontName;
 
 /** creates a menu item from a string without target/selector. To be used with CCMenuItemToggle */
@@ -210,18 +197,6 @@
 
 /** initializes a menu item from a string with a target/selector */
 -(id) initFromString: (NSString*) value target:(id) r selector:(SEL) s;
-
-/** set font size */
--(void) setFontSize: (NSUInteger) s;
-
-/** get font size */
--(NSUInteger) fontSize;
-
-/** set the font name */
--(void) setFontName: (NSString*) n;
-
-/** get the font name */
--(NSString*) fontName;
 
 #if NS_BLOCKS_AVAILABLE
 /** creates a menu item from a string with the specified block.
@@ -235,9 +210,6 @@
 -(id) initFromString: (NSString*) value block:(void(^)(id sender))block;
 #endif
 @end
-
-#pragma mark -
-#pragma mark CCMenuItemSprite
 
 /** CCMenuItemSprite accepts CCNode<CCRGBAProtocol> objects as items.
  The images has 3 different states:
@@ -287,9 +259,6 @@
 
 @end
 
-#pragma mark -
-#pragma mark CCMenuItemImage
-
 /** CCMenuItemImage accepts images as items.
  The images has 3 different states:
  - unselected image
@@ -326,8 +295,7 @@
 #endif
 @end
 
-#pragma mark -
-#pragma mark CCMenuItemToggle
+
 
 /** A CCMenuItemToggle
  A simple container class that "toggles" it's inner items

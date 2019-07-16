@@ -24,6 +24,6 @@
  @since v0.99.5
  */
 
-unsigned long ccNextPOT( unsigned long value );
+unsigned int ccNextPOT( unsigned int value );
 
 #endif // ! __CC_UTILS_H

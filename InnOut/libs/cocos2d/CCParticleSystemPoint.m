@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +41,7 @@
 
 @implementation CCParticleSystemPoint
 
--(id) initWithTotalParticles:(NSUInteger) numberOfParticles
+-(id) initWithTotalParticles:(int) numberOfParticles
 {
 	if( (self=[super initWithTotalParticles:numberOfParticles]) ) {
 
@@ -82,8 +81,7 @@
 	// place vertices and colos in array
 	vertices[particleIdx].pos = (ccVertex2F) {newPos.x, newPos.y};
 	vertices[particleIdx].size = p->size;
-	ccColor4B color =  { p->color.r*255, p->color.g*255, p->color.b*255, p->color.a*255 };
-	vertices[particleIdx].color = color;
+	vertices[particleIdx].colors = p->color;
 }
 
 -(void) postStep
@@ -97,8 +95,6 @@
 
 -(void) draw
 {
-	[super draw];
-
     if (particleIdx==0)
         return;
 	
@@ -119,7 +115,7 @@
 
 	glVertexPointer(2,GL_FLOAT, kPointSize, 0);
 
-	glColorPointer(4, GL_UNSIGNED_BYTE, kPointSize, (GLvoid*) offsetof(ccPointSprite, color) );
+	glColorPointer(4, GL_FLOAT, kPointSize, (GLvoid*) offsetof(ccPointSprite, colors) );
 
 	glEnableClientState(GL_POINT_SIZE_ARRAY_OES);
 	glPointSizePointerOES(GL_FLOAT, kPointSize, (GLvoid*) offsetof(ccPointSprite, size) );
@@ -127,8 +123,8 @@
 	int offset = (int)vertices;
 	glVertexPointer(2,GL_FLOAT, kPointSize, (GLvoid*) offset);
 	
-	int diff = offsetof(ccPointSprite, color);
-	glColorPointer(4, GL_UNSIGNED_BYTE, kPointSize, (GLvoid*) (offset+diff));
+	int diff = offsetof(ccPointSprite, colors);
+	glColorPointer(4, GL_FLOAT, kPointSize, (GLvoid*) (offset+diff));
 	
 	glEnableClientState(GL_POINT_SIZE_ARRAY_OES);
 	diff = offsetof(ccPointSprite, size);

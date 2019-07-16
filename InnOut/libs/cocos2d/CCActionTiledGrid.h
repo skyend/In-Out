@@ -64,7 +64,7 @@
 @interface CCShuffleTiles : CCTiledGrid3DAction
 {
 	int	seed;
-	NSUInteger tilesCount;
+	int tilesCount;
 	int *tilesOrder;
 	void *tiles;
 }
@@ -124,7 +124,7 @@
 @interface CCTurnOffTiles : CCTiledGrid3DAction
 {
 	int	seed;
-	NSUInteger tilesCount;
+	int tilesCount;
 	int *tilesOrder;
 }
 

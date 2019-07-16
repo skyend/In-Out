@@ -210,12 +210,12 @@ typedef struct
 	[super dealloc];
 }
 
--(void)shuffle:(int*)array count:(NSUInteger)len
+-(void)shuffle:(int*)array count:(int)len
 {
-	NSInteger i;
+	int i;
 	for( i = len - 1; i >= 0; i-- )
 	{
-		NSInteger j = rand() % (i+1);
+		int j = rand() % (i+1);
 		int v = array[i];
 		array[i] = array[j];
 		array[j] = v;
@@ -226,7 +226,7 @@ typedef struct
 {
 	CGPoint	pos2;
 	
-	NSInteger idx = pos.x * gridSize_.y + pos.y;
+	int idx = pos.x * gridSize_.y + pos.y;
 	
 	pos2.x = tilesOrder[idx] / (int)gridSize_.y;
 	pos2.y = tilesOrder[idx] % (int)gridSize_.y;
@@ -475,12 +475,12 @@ typedef struct
 	[super dealloc];
 }
 
--(void)shuffle:(int*)array count:(NSUInteger)len
+-(void)shuffle:(int*)array count:(int)len
 {
-	NSInteger i;
+	int i;
 	for( i = len - 1; i >= 0; i-- )
 	{
-		NSInteger j = rand() % (i+1);
+		int j = rand() % (i+1);
 		int v = array[i];
 		array[i] = array[j];
 		array[j] = v;

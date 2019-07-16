@@ -2,8 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
- *
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,17 +42,14 @@
 	CCTextureAtlas	*textureAtlas_;
 
 	// chars per row
-	NSUInteger		itemsPerRow_;
+	int				itemsPerRow_;
 	// chars per column
-	NSUInteger		itemsPerColumn_;
+	int				itemsPerColumn_;
 		
 	// width of each char
-	NSUInteger		itemWidth_;
+	int				itemWidth_;
 	// height of each char
-	NSUInteger		itemHeight_;
-
-	// quads to draw
-	NSUInteger		quadsToDraw_;
+	int				itemHeight_;
 
 	// blend function
 	ccBlendFunc		blendFunc_;
@@ -77,14 +72,12 @@
 /** conforms to CCRGBAProtocol protocol */
 @property (nonatomic,readwrite) ccColor3B color;
 
-/** how many quads to draw */
-@property (nonatomic,readwrite) NSUInteger quadsToDraw;
 
 /** creates a CCAtlasNode  with an Atlas file the width and height of each item measured in points and the quantity of items to render*/
-+(id) atlasWithTileFile:(NSString*)tile tileWidth:(NSUInteger)w tileHeight:(NSUInteger)h itemsToRender: (NSUInteger) c;
++(id) atlasWithTileFile:(NSString*)tile tileWidth:(int)w tileHeight:(int)h itemsToRender: (int) c;
 
 /** initializes an CCAtlasNode  with an Atlas file the width and height of each item measured in points and the quantity of items to render*/
--(id) initWithTileFile:(NSString*)tile tileWidth:(NSUInteger)w tileHeight:(NSUInteger)h itemsToRender: (NSUInteger) c;
+-(id) initWithTileFile:(NSString*)tile tileWidth:(int)w tileHeight:(int)h itemsToRender: (int) c;
 
 /** updates the Atlas (indexed vertex array).
  * Shall be overriden in subclasses

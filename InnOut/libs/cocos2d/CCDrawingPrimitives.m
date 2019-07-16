@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2008-2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +75,7 @@ void ccDrawPoints( const CGPoint *points, NSUInteger numberOfPoints )
 		} else
 			glVertexPointer(2, GL_FLOAT, 0, points);
 		
-		glDrawArrays(GL_POINTS, 0, (GLsizei) numberOfPoints);
+		glDrawArrays(GL_POINTS, 0, numberOfPoints);
 		
 	} else {
 		
@@ -85,7 +84,7 @@ void ccDrawPoints( const CGPoint *points, NSUInteger numberOfPoints )
 			newPoints[i] = (ccVertex2F) { points[i].x, points[i].y };
 			
 		glVertexPointer(2, GL_FLOAT, 0, newPoints);
-		glDrawArrays(GL_POINTS, 0, (GLsizei) numberOfPoints);
+		glDrawArrays(GL_POINTS, 0, numberOfPoints);
 
 	}
 
@@ -159,9 +158,9 @@ void ccDrawPoly( const CGPoint *poli, NSUInteger numberOfPoints, BOOL closePolyg
 	}
 		
 	if( closePolygon )
-		glDrawArrays(GL_LINE_LOOP, 0, (GLsizei) numberOfPoints);
+		glDrawArrays(GL_LINE_LOOP, 0, numberOfPoints);
 	else
-		glDrawArrays(GL_LINE_STRIP, 0, (GLsizei) numberOfPoints);
+		glDrawArrays(GL_LINE_STRIP, 0, numberOfPoints);
 	
 	// restore default state
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -201,7 +200,7 @@ void ccDrawCircle( CGPoint center, float r, float a, NSUInteger segs, BOOL drawL
 	glDisableClientState(GL_COLOR_ARRAY);
 	
 	glVertexPointer(2, GL_FLOAT, 0, vertices);	
-	glDrawArrays(GL_LINE_STRIP, 0, (GLsizei) segs+additionalSegment);
+	glDrawArrays(GL_LINE_STRIP, 0, segs+additionalSegment);
 	
 	// restore default state
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -233,7 +232,7 @@ void ccDrawQuadBezier(CGPoint origin, CGPoint control, CGPoint destination, NSUI
 	glDisableClientState(GL_COLOR_ARRAY);
 	
 	glVertexPointer(2, GL_FLOAT, 0, vertices);	
-	glDrawArrays(GL_LINE_STRIP, 0, (GLsizei) segments + 1);
+	glDrawArrays(GL_LINE_STRIP, 0, segments + 1);
 	
 	// restore default state
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -263,7 +262,7 @@ void ccDrawCubicBezier(CGPoint origin, CGPoint control1, CGPoint control2, CGPoi
 	glDisableClientState(GL_COLOR_ARRAY);
 	
 	glVertexPointer(2, GL_FLOAT, 0, vertices);	
-	glDrawArrays(GL_LINE_STRIP, 0, (GLsizei) segments + 1);
+	glDrawArrays(GL_LINE_STRIP, 0, segments + 1);
 	
 	// restore default state
 	glEnableClientState(GL_COLOR_ARRAY);

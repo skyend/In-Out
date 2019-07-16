@@ -2,7 +2,6 @@
  * cocos2d for iPhone: http://www.cocos2d-iphone.org
  *
  * Copyright (c) 2010 Ricardo Quesada
- * Copyright (c) 2011 Zynga Inc.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +65,6 @@
 @implementation CCDirectorMac
 
 @synthesize isFullScreen = isFullScreen_;
-@synthesize originalWinSize = originalWinSize_;
 
 -(id) init
 {
@@ -74,7 +72,7 @@
 		isFullScreen_ = NO;
 		resizeMode_ = kCCDirectorResize_AutoScale;
 		
-        originalWinSize_ = CGSizeZero;
+		fullScreenGLView_ = nil;
 		fullScreenWindow_ = nil;
 		windowGLView_ = nil;
 		winOffset_ = CGPointZero;
@@ -85,7 +83,7 @@
 
 - (void) dealloc
 {
-    [superViewGLView_ release];
+	[fullScreenGLView_ release];
 	[fullScreenWindow_ release];
 	[windowGLView_ release];
 	[super dealloc];
@@ -98,68 +96,58 @@
 {
 	// Mac OS X 10.6 and later offer a simplified mechanism to create full-screen contexts
 #if MAC_OS_X_VERSION_MIN_REQUIRED > MAC_OS_X_VERSION_10_5
-	
-    if (isFullScreen_ == fullscreen) return;
-    
-    if( fullscreen ) {
-        originalWinRect_ = [openGLView_ frame];
 
-        // Cache normal window and superview of openGLView
-        if(!windowGLView_)
-            windowGLView_ = [[openGLView_ window] retain];
-        
-        [superViewGLView_ release];
-        superViewGLView_ = [[openGLView_ superview] retain];
-        
-                              
-        // Get screen size
-        NSRect displayRect = [[NSScreen mainScreen] frame];
-        
-        // Create a screen-sized window on the display you want to take over
-        fullScreenWindow_ = [[MacWindow alloc] initWithFrame:displayRect fullscreen:YES];
-        
-        // Remove glView from window
-        [openGLView_ removeFromSuperview];
-        
-        // Set new frame
-        [openGLView_ setFrame:displayRect];
-        
-        // Attach glView to fullscreen window
-        [fullScreenWindow_ setContentView:openGLView_];
-        
-        // Show the fullscreen window
-        [fullScreenWindow_ makeKeyAndOrderFront:self];
-		[fullScreenWindow_ makeMainWindow];
-        
-    } else {
-        
-        // Remove glView from fullscreen window
-        [openGLView_ removeFromSuperview];
-        
-        // Release fullscreen window
-        [fullScreenWindow_ release];
-        fullScreenWindow_ = nil;
-        
-        // Attach glView to superview
-        [superViewGLView_ addSubview:openGLView_];
-        
-        // Set new frame
-        [openGLView_ setFrame:originalWinRect_];
-        
-        // Show the window
-        [windowGLView_ makeKeyAndOrderFront:self];
-		[windowGLView_ makeMainWindow];
-    }
-    isFullScreen_ = fullscreen;
-    
-    [openGLView_ retain]; // Retain +1
-    
-    // re-configure glView
-    [self setOpenGLView:openGLView_];
-    
-    [openGLView_ release]; // Retain -1
-    
-    [openGLView_ setNeedsDisplay:YES];
+	if( isFullScreen_ != fullscreen ) {
+
+		isFullScreen_ = fullscreen;
+	
+		if( fullscreen ) {
+			
+			// create the fullscreen view/window
+			NSRect mainDisplayRect, viewRect;
+			
+			// Create a screen-sized window on the display you want to take over
+			// Note, mainDisplayRect has a non-zero origin if the key window is on a secondary display
+			mainDisplayRect = [[NSScreen mainScreen] frame];
+			fullScreenWindow_ = [[NSWindow alloc] initWithContentRect:mainDisplayRect
+															styleMask:NSBorderlessWindowMask
+															  backing:NSBackingStoreBuffered
+																defer:YES];
+			
+			// Set the window level to be above the menu bar
+			[fullScreenWindow_ setLevel:NSMainMenuWindowLevel+1];
+			
+			// Perform any other window configuration you desire
+			[fullScreenWindow_ setOpaque:YES];
+			[fullScreenWindow_ setHidesOnDeactivate:YES];
+			
+			// Create a view with a double-buffered OpenGL context and attach it to the window
+			// By specifying the non-fullscreen context as the shareContext, we automatically inherit the OpenGL objects (textures, etc) it has defined
+			viewRect = NSMakeRect(0.0, 0.0, mainDisplayRect.size.width, mainDisplayRect.size.height);
+			
+			fullScreenGLView_ = [[MacGLView alloc] initWithFrame:viewRect shareContext:[openGLView_ openGLContext]];
+
+			[fullScreenWindow_ setContentView:fullScreenGLView_];
+
+			// Show the window
+			[fullScreenWindow_ makeKeyAndOrderFront:self];
+			
+			[self setOpenGLView:fullScreenGLView_];
+
+		} else {
+			
+			[fullScreenWindow_ release];
+			[fullScreenGLView_ release];
+			fullScreenWindow_ = nil;
+			fullScreenGLView_ = nil;
+
+			[[windowGLView_ openGLContext] makeCurrentContext];
+			[self setOpenGLView:windowGLView_];
+			
+		}
+		
+		[openGLView_ setNeedsDisplay:YES];
+	}
 #else
 #error Full screen is not supported for Mac OS 10.5 or older yet
 #error If you don't want FullScreen support, you can safely remove these 2 lines
@@ -171,8 +159,8 @@
 	[super setOpenGLView:view];
 	
 	// cache the NSWindow and NSOpenGLView created from the NIB
-	if( !isFullScreen_ && CGSizeEqualToSize(originalWinSize_, CGSizeZero))
-    {
+	if( ! isFullScreen_ && ! windowGLView_) {
+		windowGLView_ = [view retain];
 		originalWinSize_ = winSizeInPixels_;
 	}
 }
@@ -185,11 +173,16 @@
 -(void) setResizeMode:(int)mode
 {
 	if( mode != resizeMode_ ) {
-
 		resizeMode_ = mode;
 
-        [self setProjection:projection_];
-        [openGLView_ setNeedsDisplay: YES];
+		[openGLView_ setNeedsDisplay: YES];
+		
+		[self setProjection:projection_];
+		
+		if( mode == kCCDirectorResize_AutoScale ) {
+			originalWinSize_ = winSizeInPixels_;
+			CCLOG(@"cocos2d: Warning. Switching back to AutoScale might break some stuff. Experimental stuff");
+		}
 	}
 }
 
@@ -221,7 +214,7 @@
 		offset = winOffset_;
 
 	}
-
+		
 	switch (projection) {
 		case kCCDirectorProjection2D:
 			glViewport(offset.x, offset.y, widthAspect, heightAspect);
@@ -267,7 +260,6 @@
 {
 	if( resizeMode_ == kCCDirectorResize_AutoScale )
 		return originalWinSize_;
-    
 	return winSizeInPixels_;
 }
 
@@ -316,7 +308,7 @@
 	[self drawScene];
 	[[CCEventDispatcher sharedDispatcher] dispatchQueuedEvents];
 	
-	[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:nil];
+	[[NSRunLoop currentRunLoop] run];
 	
 	[pool release];
 
@@ -446,11 +438,9 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
 	CC_DISABLE_DEFAULT_GL_STATES();
 	
 	glPopMatrix();
-		
-	totalFrames_++;
-
+			
 	[[openGLView_ openGLContext] flushBuffer];	
-	CGLUnlockContext([[openGLView_ openGLContext] CGLContextObj]);	
+	CGLUnlockContext([[openGLView_ openGLContext] CGLContextObj]);
 }
 
 // set the event dispatcher
@@ -464,13 +454,9 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
 		[openGLView_ setEventDelegate: eventDispatcher];
 		[eventDispatcher setDispatchEvents: YES];
 		
-
 		// Enable Touches. Default no.
-		// Only available on OS X 10.6+
-#if MAC_OS_X_VERSION_MIN_REQUIRED > MAC_OS_X_VERSION_10_5
 		[view setAcceptsTouchEvents:NO];
 //		[view setAcceptsTouchEvents:YES];
-#endif
 		
 
 		// Synchronize buffer swaps with vertical refresh rate

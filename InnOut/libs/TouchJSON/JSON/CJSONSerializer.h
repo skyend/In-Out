@@ -1,9 +1,9 @@
 //
 //  CJSONSerializer.h
-//  TouchCode
+//  TouchJSON
 //
 //  Created by Jonathan Wight on 12/07/2005.
-//  Copyright 2005 toxicsoftware.com. All rights reserved.
+//  Copyright (c) 2005 Jonathan Wight
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -34,20 +34,12 @@
 
 + (id)serializer;
 
-- (BOOL)isValidJSONObject:(id)inObject;
+- (NSString *)serializeObject:(id)inObject;
 
-/// Take any JSON compatible object (generally NSNull, NSNumber, NSString, NSArray and NSDictionary) and produce an NSData containing the serialized JSON.
-- (NSData *)serializeObject:(id)inObject error:(NSError **)outError;
-
-- (NSData *)serializeNull:(NSNull *)inNull error:(NSError **)outError;
-- (NSData *)serializeNumber:(NSNumber *)inNumber error:(NSError **)outError;
-- (NSData *)serializeString:(NSString *)inString error:(NSError **)outError;
-- (NSData *)serializeArray:(NSArray *)inArray error:(NSError **)outError;
-- (NSData *)serializeDictionary:(NSDictionary *)inDictionary error:(NSError **)outError;
+- (NSString *)serializeNull:(NSNull *)inNull;
+- (NSString *)serializeNumber:(NSNumber *)inNumber;
+- (NSString *)serializeString:(NSString *)inString;
+- (NSString *)serializeArray:(NSArray *)inArray;
+- (NSString *)serializeDictionary:(NSDictionary *)inDictionary;
 
 @end
-
-typedef enum {
-    CJSONSerializerErrorCouldNotSerializeDataType = -1,
-    CJSONSerializerErrorCouldNotSerializeObject = -1
-} CJSONSerializerError;
